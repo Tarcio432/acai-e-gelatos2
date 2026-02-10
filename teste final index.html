@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Açaí e Gelatos - Peça Agora</title>
+    <style>
+        :root {
+            --roxo-escuro: #2d0a3d;
+            --roxo-claro: #4b1263;
+            --dourado: #ffd700;
+            --branco: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--roxo-escuro);
+            color: var(--branco);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        .logo { max-width: 180px; border-radius: 50%; border: 3px solid var(--dourado); }
+
+        .card {
+            background-color: var(--roxo-claro);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        h2 { color: var(--dourado); border-bottom: 1px solid var(--dourado); padding-bottom: 10px; margin-top: 0; }
+        
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .option-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .option-item:hover { background: rgba(255,255,255,0.2); }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        .btn-novo-item {
+            background-color: var(--dourado);
+            color: var(--roxo-escuro);
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        #carrinho {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .item-carrinho {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-remover { background: #dc3545; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; }
+
+        .total-box {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 15px;
+            color: var(--roxo-escuro);
+        }
+
+        .btn-finalizar {
+            background-color: #25d366;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .hidden { display: none; }
+        .aviso-auto { text-align: center; color: var(--dourado); font-style: italic; margin-bottom: 10px; font-size: 0.9em;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <img src="https://i.postimg.cc/hP9HHjcB/Design-sem-nome-20260131-092301-0000.jpg" alt="AÇAÍ E GELATOS" class="logo">
+        <h1>AÇAÍ E GELATOS</h1>
+    </header>
+
+    <div class="card">
+        <h2>Seus Dados</h2>
+        <input type="text" id="nome" placeholder="Seu Nome (Obrigatório)*">
+        <input type="text" id="endereco" placeholder="Endereço Completo (Obrigatório)*">
+        <input type="text" id="complemento" placeholder="Complemento (Opcional)">
+    </div>
+
+    <div class="card">
+        <h2>1. Tamanho</h2>
+        <div class="grid-options">
+            <label class="option-item"><input type="radio" name="tamanho" value="200" data-preco="10" data-limite="3"> 200ml (3 itens) - R$10,00</label>
+            <label class="option-item"><input type="radio" name="tamanho" value="330" data-preco="14" data-limite="5"> 330ml (5 itens) - R$14,00</label>
+            <label class="option-item"><input type="radio" name="tamanho" value="400" data-preco="16" data-limite="5"> 400ml (5 itens) - R$16,00</label>
+            <label class="option-item"><input type="radio" name="tamanho" value="550" data-preco="18" data-limite="6"> 550ml (6 itens) - R$18,00</label>
+            <label class="option-item"><input type="radio" name="tamanho" value="770" data-preco="26" data-limite="6"> 770ml (6 itens) - R$26,00</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>2. Tipo de Açaí</h2>
+        <div class="grid-options">
+            <label class="option-item"><input type="radio" name="tipo" value="Tradicional" checked> Tradicional</label>
+            <label class="option-item"><input type="radio" name="tipo" value="Zero Açúcar"> Zero Açúcar</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>3. Acompanhamentos (<span id="count-acomp">0</span> selecionados)</h2>
+        <div class="grid-options" id="lista-acomp"></div>
+    </div>
+
+    <div class="card">
+        <h2>4. Cremes (Escolha 1)</h2>
+        <div class="grid-options">
+            <label class="option-item"><input type="radio" name="creme" value="Sem Creme"> Sem Creme</label>
+            <label class="option-item"><input type="radio" name="creme" value="Cupuaçu"> Cupuaçu</label>
+            <label class="option-item"><input type="radio" name="creme" value="Ninho"> Ninho</label>
+            <label class="option-item"><input type="radio" name="creme" value="Ovomaltine"> Ovomaltine</label>
+            <label class="option-item"><input type="radio" name="creme" value="Ninho com Nutella"> Ninho com Nutella</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>5. Frutas</h2>
+        <div class="grid-options">
+            <label class="option-item"><input type="checkbox" name="fruta" value="Banana" data-preco="0"> Banana (Grátis)</label>
+            <label class="option-item"><input type="checkbox" name="fruta" value="Morango" data-preco="2"> Morango (+R$2,00)</label>
+            <label class="option-item"><input type="checkbox" name="fruta" value="Kiwi" data-preco="2"> Kiwi (+R$2,00)</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>6. Cobertura (Finaliza o item)</h2>
+        <div class="grid-options">
+            <label class="option-item"><input type="radio" name="cobertura" value="Morango" onclick="tentarAdicionarAutomatico()"> Morango</label>
+            <label class="option-item"><input type="radio" name="cobertura" value="Chocolate" onclick="tentarAdicionarAutomatico()"> Chocolate</label>
+            <label class="option-item"><input type="radio" name="cobertura" value="Abacaxi" onclick="tentarAdicionarAutomatico()"> Abacaxi</label>
+            <label class="option-item"><input type="radio" name="cobertura" value="Maracujá" onclick="tentarAdicionarAutomatico()"> Maracujá</label>
+            <label class="option-item"><input type="radio" name="cobertura" value="Mel" onclick="tentarAdicionarAutomatico()"> Mel</label>
+            <label class="option-item"><input type="radio" name="cobertura" value="Leite Condensado" onclick="tentarAdicionarAutomatico()"> Leite Condensado</label>
+            <label class="option-item"><input type="radio" name="cobertura" value="Sem Cobertura" onclick="tentarAdicionarAutomatico()"> Sem Cobertura</label>
+        </div>
+    </div>
+
+    <p class="aviso-auto">O item é adicionado ao carrinho assim que você escolhe a cobertura!</p>
+    <button class="btn-novo-item" onclick="resetForm()">Pedir Outro Açaí (Limpar Seleção)</button>
+
+    <div id="carrinho">
+        <h2 style="color: var(--roxo-escuro); border-bottom: 2px solid var(--roxo-escuro);">Seu Carrinho</h2>
+        <div id="itens-carrinho"></div>
+        
+        <div class="card" style="background: #f9f9f9; color: #333; margin-top: 20px; border: 1px solid #ddd;">
+            <h3>Forma de Pagamento</h3>
+            <select id="pagamento" onchange="verificarDinheiro()">
+                <option value="">Selecione...</option>
+                <option value="PIX">PIX</option>
+                <option value="CARTÃO">CARTÃO</option>
+                <option value="DINHEIRO">DINHEIRO</option>
+            </select>
+
+            <div id="sessao-troco" class="hidden">
+                <p>Precisa de troco?</p>
+                <label><input type="radio" name="troco_sn" value="Sim" onclick="toggleTrocoInput(true)"> Sim</label>
+                <label><input type="radio" name="troco_sn" value="Não" onclick="toggleTrocoInput(false)" checked> Não</label>
+                <div id="input-valor-troco" class="hidden">
+                    <input type="text" id="valor-troco" placeholder="TROCO PARA:">
+                </div>
+            </div>
+        </div>
+
+        <div class="total-box">
+            Entrega: <span style="font-size: 0.9em; color: #d9534f;">A combinar por bairro</span><br>
+            Subtotal: R$ <span id="valor-total">0,00</span>
+        </div>
+        
+        <button class="btn-finalizar" onclick="finalizarPedido()">FINALIZAR PEDIDO (WhatsApp)</button>
+    </div>
+</div>
+
+<script>
+    const acompanhamentos = ["Ovomaltine", "Jujuba", "Gotas de chocolate", "Gotas de chocolate zero lactose", "MM", "Cereal ball zero lactose", "Marshmallows", "Granola", "Granola zero açúcar", "Leite em pó ninho", "Farinha láctea", "Amendoim triturado", "Paçoca", "Sucrilhos", "Cereal de chocolate", "Cereal colorido", "Flocos de arroz", "Tub-in", "Nutella", "Chocolate em pó 50% cacau"];
+    let carrinho = [];
+    const taxa = 0.00; 
+
+    const containerAcomp = document.getElementById('lista-acomp');
+    acompanhamentos.forEach(a => {
+        containerAcomp.innerHTML += `<label class="option-item"><input type="checkbox" name="acomp" value="${a}" onclick="validarLimite(this)"> ${a}</label>`;
+    });
+
+    function validarLimite(cb) {
+        const tam = document.querySelector('input[name="tamanho"]:checked');
+        if(!tam) { 
+            alert("Por favor, selecione o TAMANHO antes de escolher os acompanhamentos!"); 
+            cb.checked = false; 
+            return; 
+        }
+        const limite = parseInt(tam.dataset.limite);
+        const qtd = document.querySelectorAll('input[name="acomp"]:checked').length;
+        if(qtd > limite) { 
+            alert(`Limite de ${limite} acompanhamentos atingido para este tamanho!`); 
+            cb.checked = false; 
+        }
+        document.getElementById('count-acomp').innerText = document.querySelectorAll('input[name="acomp"]:checked').length;
+    }
+
+    function tentarAdicionarAutomatico() {
+        const tam = document.querySelector('input[name="tamanho"]:checked');
+        const creme = document.querySelector('input[name="creme"]:checked');
+        const cob = document.querySelector('input[name="cobertura"]:checked');
+
+        if(tam && creme && cob) {
+            adicionarAoCarrinho(tam, creme, cob);
+        } else {
+            alert("Para adicionar ao carrinho, escolha primeiro o Tamanho e o Creme!");
+            document.querySelectorAll('input[name="cobertura"]').forEach(c => c.checked = false);
+        }
+    }
+
+    function adicionarAoCarrinho(tam, creme, cob) {
+        let pFrutas = 0;
+        let nFrutas = [];
+        document.querySelectorAll('input[name="fruta"]:checked').forEach(f => {
+            pFrutas += parseFloat(f.dataset.preco);
+            nFrutas.push(f.value);
+        });
+
+        const item = {
+            id: Date.now(),
+            tamanho: `${tam.value}ml`,
+            tipo: document.querySelector('input[name="tipo"]:checked').value,
+            acomp: Array.from(document.querySelectorAll('input[name="acomp"]:checked')).map(a => a.value).join(', '),
+            creme: creme.value,
+            frutas: nFrutas.join(', ') || 'Nenhuma',
+            cobertura: cob.value,
+            preco: parseFloat(tam.dataset.preco) + pFrutas
+        };
+
+        carrinho.push(item);
+        renderCarrinho();
+        resetForm();
+        document.getElementById('carrinho').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderCarrinho() {
+        const div = document.getElementById('itens-carrinho');
+        let subtotal = 0;
+        div.innerHTML = "";
+        
+        carrinho.forEach(i => {
+            subtotal += i.preco;
+            div.innerHTML += `
+                <div class="item-carrinho">
+                    <div>
+                        <strong>${i.tamanho} - ${i.tipo}</strong><br>
+                        <small>Creme: ${i.creme} | Frutas: ${i.frutas} | Cobertura: ${i.cobertura}</small><br>
+                        <small style="color:var(--roxo-claro)">Acomp: ${i.acomp || 'Nenhum'}</small><br>
+                        <strong>R$ ${i.preco.toFixed(2)}</strong>
+                    </div>
+                    <button class="btn-remover" onclick="remover(${i.id})">Remover</button>
+                </div>`;
+        });
+        
+        const totalFinal = carrinho.length > 0 ? subtotal + taxa : 0;
+        document.getElementById('valor-total').innerText = totalFinal.toFixed(2);
+    }
+
+    function remover(id) {
+        carrinho = carrinho.filter(i => i.id !== id);
+        renderCarrinho();
+    }
+
+    function resetForm() {
+        document.querySelectorAll('input[name="tamanho"], input[name="creme"], input[name="cobertura"], input[name="acomp"], input[name="fruta"]').forEach(i => i.checked = false);
+        document.querySelectorAll('input[name="tipo"]').forEach(i => {
+            if(i.value === "Tradicional") i.checked = true;
+        });
+        document.getElementById('count-acomp').innerText = "0";
+    }
+
+    function verificarDinheiro() {
+        const pag = document.getElementById('pagamento').value;
+        document.getElementById('sessao-troco').className = pag === 'DINHEIRO' ? '' : 'hidden';
+    }
+
+    function toggleTrocoInput(show) {
+        document.getElementById('input-valor-troco').className = show ? '' : 'hidden';
+    }
+
+    function finalizarPedido() {
+        const nome = document.getElementById('nome').value;
+        const endereco = document.getElementById('endereco').value;
+        const complemento = document.getElementById('complemento').value;
+        const pagamento = document.getElementById('pagamento').value;
+        const total = parseFloat(document.getElementById('valor-total').innerText);
+
+        if(!nome || !endereco) { alert("Informe seu nome e endereço!"); return; }
+        if(carrinho.length === 0) { alert("Seu carrinho está vazio!"); return; }
+        if(!pagamento) { alert("Escolha a forma de pagamento!"); return; }
+
+        let infoTroco = "";
+        if(pagamento === "DINHEIRO") {
+            const querTroco = document.querySelector('input[name="troco_sn"]:checked').value;
+            if(querTroco === "Sim") {
+                const valorTroco = parseFloat(document.getElementById('valor-troco').value);
+                if(isNaN(valorTroco) || valorTroco <= total) {
+                    alert("O valor do troco deve ser MAIOR que o total do pedido!");
+                    return;
+                }
+                infoTroco = `\n*Troco para:* R$ ${valorTroco.toFixed(2)}`;
+            }
+        }
+
+        let texto = `*NOVO PEDIDO - AÇAÍ E GELATOS*\n\n`;
+        texto += `*--- DADOS DO CLIENTE ---*\n`;
+        texto += `*Nome:* ${nome}\n`;
+        texto += `*Endereço:* ${endereco}\n`;
+        texto += `*Complemento:* ${complemento || 'N/A'}\n\n`;
+
+        texto += `*--- ITENS DO PEDIDO ---*\n`;
+        carrinho.forEach((i, index) => {
+            texto += `*${index + 1}. Item:* ${i.tamanho} (${i.tipo})\n`;
+            texto += `   *Acompanhamentos:* ${i.acomp || 'Nenhum'}\n`;
+            texto += `   *Creme:* ${i.creme}\n`;
+            texto += `   *Frutas:* ${i.frutas}\n`;
+            texto += `   *Cobertura:* ${i.cobertura}\n`;
+            texto += `   *Valor:* R$ ${i.preco.toFixed(2)}\n\n`;
+        });
+
+        texto += `*--- PAGAMENTO E TOTAL ---*\n`;
+        texto += `*Forma de Pagamento:* ${pagamento}${infoTroco}\n`;
+        texto += `*Taxa de Entrega:* A combinar por bairro\n`;
+        texto += `*TOTAL DOS PRODUTOS: R$ ${total.toFixed(2)}*\n\n`;
+        texto += `_Por favor, aguarde a confirmação da taxa de entrega para o seu bairro._`;
+
+        const url = `https://wa.me/5582993756380?text=${encodeURIComponent(texto)}`;
+        window.open(url, '_blank');
+    }
+</script>
+
+</body>
+</html>
